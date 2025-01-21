@@ -1,0 +1,33 @@
+server {
+    listen 127.0.0.1:80;
+    #listen VALET_LOOPBACK:80; # valet loopback
+    server_name node.test www.node.test *.node.test;
+
+    root /;
+
+    charset utf-8;
+    client_max_body_size 1024M;
+    http2 on;
+
+    #ssl_certificate "/Users/[your-username]/Library/Application Support/Herd/config/valet/Certificates/node.test.crt";
+    #ssl_certificate_key "/Users/[your-username]/Library/Application Support/Herd/config/valet/Certificates/node.test.key";
+
+    location / {
+        proxy_pass http://127.0.0.1:3000; # Assuming Node.js runs on port 3000
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Keep SSL configuration
+    #ssl_protocols TLSv1.2 TLSv1.3;
+
+    # Error logs
+    access_log off;
+    error_log "/Users/[your-username]/Library/Application Support/Herd/Log/nginx-error.log";
+}
